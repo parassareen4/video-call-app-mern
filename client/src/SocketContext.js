@@ -4,7 +4,7 @@ import Peer from 'simple-peer';
 
 const SocketContext = createContext();
 
-const socket = io('https://ad-video-call-app.herokuapp.com/');
+const socket = io('http://192.168.1.10:5050');
 
 const ContextProvider = ({ children }) => {
 
@@ -14,24 +14,42 @@ const ContextProvider = ({ children }) => {
     const [callAccepted, setCallAccepted] = useState(false);
     const [callEnded, setCallEnded] = useState(false);
     const [Name, setName] = useState('');
+    const [userRole, setUserRole] = useState('');
+    const [waitingClients, setWaitingClients] = useState([]);
+    const [queuePosition, setQueuePosition] = useState(null);
     const myVideo = useRef();
     const userVideo = useRef();
     const connectionRef = useRef();
 
     useEffect(() => {
-        navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true
-        }).then(currentStream => {
-            setStream(currentStream);
-            myVideo.current.srcObject = currentStream;
+        socket.on('me', (id) => setMe(id));
+
+        // Admin-specific events
+        socket.on('clientsUpdate', (clients) => {
+            setWaitingClients(clients);
         });
 
-        socket.on('me', (id) => setMe(id));
+        // Client-specific events
+        socket.on('queuePosition', (position) => {
+            setQueuePosition(position);
+        });
+
+        socket.on('adminCalling', () => {
+            // Admin is calling - auto-accept for simplicity
+            setCall({ isReceivedCall: true, from: 'admin', name: 'Counselor', signal: null });
+        });
 
         socket.on('calluser', ({ from, name: callerName, signal }) => {
             setCall({ isReceivedCall: true, from, name: callerName, signal });
         });
+
+        return () => {
+            socket.off('me');
+            socket.off('clientsUpdate');
+            socket.off('queuePosition');
+            socket.off('adminCalling');
+            socket.off('calluser');
+        };
     }, []);
 
     // console.log(me);
@@ -78,12 +96,68 @@ const ContextProvider = ({ children }) => {
         setCallEnded(true);
 
         connectionRef.current.destroy();
+        
+        // Notify server that call ended
+        socket.emit('callEnded');
 
-        window.location.reload();
+        // Reset call state
+        setCall({});
+        setCallAccepted(false);
+        setCallEnded(false);
+
+        // Stop video stream
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            setStream(null);
+        }
+    }
+
+    const joinRoom = (role, name) => {
+        setUserRole(role);
+        setName(name);
+        
+        // Request media access when joining
+        navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true
+        }).then(currentStream => {
+            setStream(currentStream);
+            if (myVideo.current) {
+                myVideo.current.srcObject = currentStream;
+            }
+        }).catch(err => {
+            console.error('Failed to get media:', err);
+        });
+
+        socket.emit('join', { role, name });
+    }
+
+    // Admin calls client directly
+    const adminCallClient = (clientId) => {
+        socket.emit('adminCallClient', { clientId });
+        callUser(clientId);
     }
 
     return (
-        <SocketContext.Provider value={{ call, callAccepted, callEnded, stream, myVideo, userVideo, Name, setName, me, callUser, leaveCall, answerCall }}>
+        <SocketContext.Provider value={{ 
+            call, 
+            callAccepted, 
+            callEnded, 
+            stream, 
+            myVideo, 
+            userVideo, 
+            Name, 
+            setName, 
+            me, 
+            callUser, 
+            leaveCall, 
+            answerCall,
+            joinRoom,
+            userRole,
+            waitingClients,
+            queuePosition,
+            adminCallClient
+        }}>
             {children}
         </SocketContext.Provider>
     );
