@@ -4,7 +4,6 @@ import {
   Paper, 
   Typography, 
   Button, 
-  Box, 
   Container 
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
