@@ -1,121 +1,46 @@
-import React, { useState, useContext } from 'react';
-import { AppBar, Typography } from '@mui/material';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import './App.css';
-import VideoPlayer from './components/VideoPlayer/VideoPlayer';
-import Options from './components/Options/Options';
-import Notification from './components/Notification/Notification';
-import RoleSelection from './components/RoleSelection/RoleSelection';
-import AdminDashboard from './components/AdminDashboard/AdminDashboard';
-import ClientQueue from './components/ClientQueue/ClientQueue';
-import { SocketContext } from './SocketContext';
+import HomePage from './pages/HomePage';
+import AdminPage from './pages/AdminPage';
+import ClientPage from './pages/ClientPage';
+import NotFoundPage from './pages/NotFoundPage';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#e91e63',
+    },
+    background: {
+      default: '#f5f5f5',
+    },
+  },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  },
+});
 
 function App() {
-  const [selectedRole, setSelectedRole] = useState(null);
-  const [nameEntered, setNameEntered] = useState(false);
-  const { 
-    call, 
-    callAccepted, 
-    callEnded, 
-    stream,
-    joinRoom,
-    userRole,
-    waitingClients,
-    queuePosition 
-  } = useContext(SocketContext);
-
-  const handleRoleSelect = (role) => {
-    setSelectedRole(role);
-  };
-
-  const handleNameSubmit = (name) => {
-    joinRoom(selectedRole, name);
-    setNameEntered(true);
-  };
-
-  // Show role selection if no role selected
-  if (!selectedRole) {
-    return (
-      <div className='wrapper'>
-        <AppBar className='appBar' position='static' color='inherit'>
-          <Typography variant='h4' align='center'>
-            Counseling Platform
-          </Typography>
-        </AppBar>
-        <RoleSelection onRoleSelect={handleRoleSelect} />
-      </div>
-    );
-  }
-
-  // Show name input if role selected but name not entered
-  if (!nameEntered) {
-    return (
-      <div className='wrapper'>
-        <AppBar className='appBar' position='static' color='inherit'>
-          <Typography variant='h4' align='center'>
-            Counseling Platform
-          </Typography>
-        </AppBar>
-        <Options onNameSubmit={handleNameSubmit} role={selectedRole} />
-      </div>
-    );
-  }
-
-  // Show video call interface if call is active
-  if (call.isReceivedCall && !callAccepted && !callEnded) {
-    return (
-      <div className='wrapper'>
-        <AppBar className='appBar' position='static' color='inherit'>
-          <Typography variant='h4' align='center'>
-            Counseling Session
-          </Typography>
-        </AppBar>
-        <Notification />
-      </div>
-    );
-  }
-
-  if (callAccepted && !callEnded) {
-    return (
-      <div className='wrapper'>
-        <AppBar className='appBar' position='static' color='inherit'>
-          <Typography variant='h4' align='center'>
-            Counseling Session
-          </Typography>
-        </AppBar>
-        <VideoPlayer />
-        <Options role={selectedRole} />
-      </div>
-    );
-  }
-
-  // Show appropriate dashboard based on role
-  if (selectedRole === 'admin') {
-    return (
-      <div className='wrapper'>
-        <AppBar className='appBar' position='static' color='inherit'>
-          <Typography variant='h4' align='center'>
-            Admin Dashboard - Counseling Platform
-          </Typography>
-        </AppBar>
-        <AdminDashboard />
-      </div>
-    );
-  }
-
-  if (selectedRole === 'client') {
-    return (
-      <div className='wrapper'>
-        <AppBar className='appBar' position='static' color='inherit'>
-          <Typography variant='h4' align='center'>
-            Counseling Platform
-          </Typography>
-        </AppBar>
-        <ClientQueue />
-      </div>
-    );
-  }
-
-  return null;
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
+        <div className='wrapper'>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/client" element={<ClientPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </div>
+      </Router>
+    </ThemeProvider>
+  );
 }
 
 export default App;
