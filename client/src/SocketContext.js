@@ -4,7 +4,7 @@ import Peer from 'simple-peer';
 
 const SocketContext = createContext();
 
-const socket = io('http://192.168.1.10:5050');
+const socket = io('video-call-app-mern-production.up.railway.app/');
 
 const ContextProvider = ({ children }) => {
 
