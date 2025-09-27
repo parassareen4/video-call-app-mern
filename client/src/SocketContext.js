@@ -52,6 +52,14 @@ const ContextProvider = ({ children }) => {
         };
     }, []);
 
+    // Set video stream when stream is available
+    useEffect(() => {
+        if (stream && myVideo.current) {
+            myVideo.current.srcObject = stream;
+            console.log('Video stream updated:', stream);
+        }
+    }, [stream]);
+
     // console.log(me);
 
     const answerCall = () => {
@@ -122,9 +130,13 @@ const ContextProvider = ({ children }) => {
             audio: true
         }).then(currentStream => {
             setStream(currentStream);
-            if (myVideo.current) {
-                myVideo.current.srcObject = currentStream;
-            }
+            // Ensure video element gets the stream
+            setTimeout(() => {
+                if (myVideo.current) {
+                    myVideo.current.srcObject = currentStream;
+                    console.log('My video stream set:', currentStream);
+                }
+            }, 100);
         }).catch(err => {
             console.error('Failed to get media:', err);
         });

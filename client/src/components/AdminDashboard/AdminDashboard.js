@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { 
   Paper, 
   Typography, 
@@ -9,12 +9,17 @@ import {
   Button,
   Box,
   Chip,
-  Grid
+  Grid,
+  CircularProgress,
+  ListItemAvatar,
+  Avatar
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { SocketContext } from '../../SocketContext';
 import VideoCallIcon from '@mui/icons-material/VideoCall';
 import PeopleIcon from '@mui/icons-material/People';
+import PersonIcon from '@mui/icons-material/Person';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -48,9 +53,19 @@ const useStyles = makeStyles(() => ({
 const AdminDashboard = () => {
   const classes = useStyles();
   const { waitingClients, adminCallClient, me } = useContext(SocketContext);
+  const [lastUpdate, setLastUpdate] = useState(Date.now());
+
+  // Update timestamp when clients change
+  useEffect(() => {
+    setLastUpdate(Date.now());
+  }, [waitingClients]);
 
   const handleCallClient = (clientId) => {
     adminCallClient(clientId);
+  };
+
+  const formatTime = (timestamp) => {
+    return new Date(timestamp).toLocaleTimeString();
   };
 
   return (
@@ -75,10 +90,15 @@ const AdminDashboard = () => {
         <Grid item xs={12} md={6}>
           <Paper className={classes.paper}>
             <Box className={classes.header}>
-              <VideoCallIcon className={classes.icon} />
+              <AccessTimeIcon className={classes.icon} />
               <Typography variant="h6">
-                Admin ID: {me}
+                Last Update
               </Typography>
+              <Chip 
+                label={formatTime(lastUpdate)} 
+                color="secondary" 
+                style={{ marginLeft: '1rem' }}
+              />
             </Box>
           </Paper>
         </Grid>
@@ -103,9 +123,35 @@ const AdminDashboard = () => {
           <List>
             {waitingClients.map((client, index) => (
               <ListItem key={client.id} divider>
+                <ListItemAvatar>
+                  <Avatar>
+                    <PersonIcon />
+                  </Avatar>
+                </ListItemAvatar>
                 <ListItemText
-                  primary={`${client.name}`}
-                  secondary={`Position: ${client.position} | ID: ${client.id}`}
+                  primary={
+                    <Box display="flex" alignItems="center">
+                      <Typography variant="h6" component="span">
+                        {client.name}
+                      </Typography>
+                      <Chip 
+                        label={`#${client.position}`} 
+                        size="small" 
+                        color="primary" 
+                        style={{ marginLeft: '1rem' }}
+                      />
+                    </Box>
+                  }
+                  secondary={
+                    <Box>
+                      <Typography variant="body2" color="textSecondary">
+                        ID: {client.id}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        Waiting in queue
+                      </Typography>
+                    </Box>
+                  }
                 />
                 <ListItemSecondaryAction>
                   <Button
@@ -114,8 +160,9 @@ const AdminDashboard = () => {
                     startIcon={<VideoCallIcon />}
                     onClick={() => handleCallClient(client.id)}
                     className={classes.callButton}
+                    size="large"
                   >
-                    Call Client
+                    Start Session
                   </Button>
                 </ListItemSecondaryAction>
               </ListItem>

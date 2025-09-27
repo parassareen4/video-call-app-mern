@@ -15,10 +15,43 @@ app.get('/', (req, res) => {
     res.send('Welcome to Counseling Platform');
 });
 
-// Store connected users
-const connectedUsers = new Map(); // socketId -> {role, name, status}
+// API endpoint to get current queue status
+app.get('/api/queue', (req, res) => {
+    res.json({
+        totalClients: waitingClients.length,
+        clients: getWaitingClientsInfo(),
+        adminConnected: adminSocket !== null,
+        timestamp: Date.now()
+    });
+});
+
+// API endpoint to get server stats
+app.get('/api/stats', (req, res) => {
+    res.json({
+        totalConnections: connectedUsers.size,
+        waitingClients: waitingClients.length,
+        adminConnected: adminSocket !== null,
+        totalHistoryEntries: clientHistory.size,
+        uptime: process.uptime(),
+        timestamp: Date.now()
+    });
+});
+
+// Store connected users and persistent queue
+const connectedUsers = new Map(); // socketId -> {role, name, status, joinedAt}
 const waitingClients = []; // queue of client socket IDs
+const clientHistory = new Map(); // persistent client data even when disconnected
 let adminSocket = null;
+
+// Cleanup old history entries (older than 24 hours)
+setInterval(() => {
+    const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+    for (const [socketId, data] of clientHistory.entries()) {
+        if (data.lastSeen < oneDayAgo) {
+            clientHistory.delete(socketId);
+        }
+    }
+}, 60 * 60 * 1000); // Run every hour
 
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
@@ -26,7 +59,8 @@ io.on('connection', (socket) => {
 
     // User joins as client or admin
     socket.on('join', ({ role, name }) => {
-        connectedUsers.set(socket.id, { role, name, status: 'available' });
+        const joinedAt = Date.now();
+        connectedUsers.set(socket.id, { role, name, status: 'available', joinedAt });
         
         if (role === 'admin') {
             adminSocket = socket.id;
@@ -35,15 +69,19 @@ io.on('connection', (socket) => {
             socket.emit('clientsUpdate', getWaitingClientsInfo());
         } else if (role === 'client') {
             waitingClients.push(socket.id);
-            console.log('Client joined queue:', name);
+            clientHistory.set(socket.id, { name, joinedAt, lastSeen: joinedAt });
+            console.log('Client joined queue:', name, 'Total in queue:', waitingClients.length);
             
             // Notify client of their queue position
             socket.emit('queuePosition', waitingClients.indexOf(socket.id) + 1);
             
-            // Notify admin of new client
+            // Notify admin of new client (even if admin not connected)
             if (adminSocket) {
                 io.to(adminSocket).emit('clientsUpdate', getWaitingClientsInfo());
             }
+            
+            // Log queue status for debugging
+            console.log('Current queue:', getWaitingClientsInfo());
         }
     });
 
@@ -54,11 +92,18 @@ io.on('connection', (socket) => {
         if (user) {
             if (user.role === 'admin') {
                 adminSocket = null;
+                console.log('Admin disconnected');
             } else if (user.role === 'client') {
+                // Update last seen time in history
+                if (clientHistory.has(socket.id)) {
+                    clientHistory.get(socket.id).lastSeen = Date.now();
+                }
+                
                 // Remove from waiting queue
                 const index = waitingClients.indexOf(socket.id);
                 if (index > -1) {
                     waitingClients.splice(index, 1);
+                    console.log('Client removed from queue. Remaining:', waitingClients.length);
                 }
                 
                 // Update queue positions for remaining clients
