@@ -1,28 +1,51 @@
-.video {
-    width: 400px;
+/* VideoPlayer Modern Styles */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.gridContainer {
-    justify-content: center;
+@keyframes liveIndicator {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
-.paper {
-    padding: 10px;
-    border: 2px solid black;
-    margin: 10px;
+.video-fade-in {
+  animation: fadeInScale 0.5s ease-out;
 }
 
+.live-indicator {
+  animation: liveIndicator 2s infinite;
+}
 
+/* Mobile-first responsive video container */
+@media (max-width: 480px) {
+  .video-container {
+    padding: 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+}
 
-@media(max-width: 600px) {
-    .video {
-        width: 400px;
-    }
+@media (max-width: 768px) {
+  .video-container {
+    padding: 1rem !important;
+  }
+}
 
-    .gridContainer {
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: center;
-        align-items: center;
-    }
+/* Video element enhancements */
+.video-element {
+  transition: all 0.3s ease;
+}
+
+.video-element:hover {
+  transform: scale(1.02);
 }

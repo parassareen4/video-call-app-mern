@@ -2,10 +2,16 @@ const app = require('express')();
 const server = require('http').createServer(app);
 const cors = require('cors');
 
+// Store connected users and persistent queue
+const connectedUsers = new Map(); // socketId -> {role, name, status, joinedAt}
+const waitingClients = []; // queue of client socket IDs
+const clientHistory = new Map(); // persistent client data even when disconnected
+let adminSocket = null;
+
 const io = require('socket.io')(server, {
     cors: {
         origin: '*',
-        method: ['GET', 'POST']
+        methods: ['GET', 'POST']
     }
 });
 
@@ -37,12 +43,6 @@ app.get('/api/stats', (req, res) => {
     });
 });
 
-// Store connected users and persistent queue
-const connectedUsers = new Map(); // socketId -> {role, name, status, joinedAt}
-const waitingClients = []; // queue of client socket IDs
-const clientHistory = new Map(); // persistent client data even when disconnected
-let adminSocket = null;
-
 // Cleanup old history entries (older than 24 hours)
 setInterval(() => {
     const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
@@ -72,8 +72,9 @@ io.on('connection', (socket) => {
             clientHistory.set(socket.id, { name, joinedAt, lastSeen: joinedAt });
             console.log('Client joined queue:', name, 'Total in queue:', waitingClients.length);
             
-            // Notify client of their queue position
-            socket.emit('queuePosition', waitingClients.indexOf(socket.id) + 1);
+            // Notify client of their queue position (after adding to queue)
+            const position = waitingClients.length; // Use length instead of indexOf to avoid race condition
+            socket.emit('queuePosition', position);
             
             // Notify admin of new client (even if admin not connected)
             if (adminSocket) {

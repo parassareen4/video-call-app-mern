@@ -73,7 +73,10 @@ const ContextProvider = ({ children }) => {
             userVideo.current.srcObject = currentStream;
         });
 
-        peer.signal(call.signal);
+        // Only signal if we have valid signal data
+        if (call.signal) {
+            peer.signal(call.signal);
+        }
 
         connectionRef.current = peer;
     }
