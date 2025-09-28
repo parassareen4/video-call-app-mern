@@ -9,7 +9,6 @@ import {
   Container,
   Paper,
   TextField,
-  Alert,
   IconButton,
   Fab
 } from '@mui/material';
@@ -101,7 +100,6 @@ const AdminPage = () => {
   const navigate = useNavigate();
   const [adminName, setAdminName] = useState('Ryan');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [error, setError] = useState('');
   
   const {
     call,
@@ -154,20 +152,6 @@ const AdminPage = () => {
           <Typography variant="h6" color="text.secondary" gutterBottom sx={{ mb: 4 }}>
             Enter your credentials to access the counselor dashboard
           </Typography>
-          
-          {error && (
-            <Alert 
-              severity="error" 
-              sx={{ 
-                mb: 3,
-                borderRadius: '15px',
-                background: 'rgba(244, 67, 54, 0.1)',
-                border: '1px solid rgba(244, 67, 54, 0.2)'
-              }}
-            >
-              {error}
-            </Alert>
-          )}
           
           <Box component="form" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
             <TextField 
