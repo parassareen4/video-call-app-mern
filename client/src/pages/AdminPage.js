@@ -99,7 +99,7 @@ const BackFab = styled(Fab)(({ theme }) => ({
 
 const AdminPage = () => {
   const navigate = useNavigate();
-  const [adminName, setAdminName] = useState('');
+  const [adminName, setAdminName] = useState('Ryan');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [error, setError] = useState('');
   
@@ -111,19 +111,16 @@ const AdminPage = () => {
     leaveCall
   } = useContext(SocketContext);
 
-  const handleLogin = () => {
-    if (!adminName.trim()) {
-      setError('Please enter your name');
-      return;
+  // Auto-login as Ryan
+  React.useEffect(() => {
+    if (!isLoggedIn) {
+      joinRoom('admin', 'Ryan');
+      setIsLoggedIn(true);
     }
-    
-    if (adminName.trim().length < 2) {
-      setError('Name must be at least 2 characters');
-      return;
-    }
+  }, [isLoggedIn, joinRoom]);
 
-    setError('');
-    joinRoom('admin', adminName);
+  const handleLogin = () => {
+    joinRoom('admin', 'Ryan');
     setIsLoggedIn(true);
   };
 
@@ -132,7 +129,7 @@ const AdminPage = () => {
       leaveCall();
     }
     setIsLoggedIn(false);
-    setAdminName('');
+    setAdminName('Ryan');
     navigate('/');
   };
 
