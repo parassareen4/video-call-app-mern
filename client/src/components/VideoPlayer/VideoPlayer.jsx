@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { Grid, Paper, Typography, Box, Avatar, Chip } from '@mui/material';
+import { Paper, Typography, Box, Avatar, Chip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { SocketContext } from '../../SocketContext';
 import VideocamIcon from '@mui/icons-material/Videocam';

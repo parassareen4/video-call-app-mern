@@ -155,29 +155,6 @@ const CustomCircularProgress = styled(CircularProgress)(({ theme }) => ({
   animation: `${spin} 2s linear infinite`,
 }));
 
-const FloatingIcon = styled(PsychologyIcon)(({ theme }) => ({
-  position: 'absolute',
-  fontSize: '2rem',
-  color: '#e91e63',
-  opacity: 0.3,
-  animation: `${float} 4s ease-in-out infinite`,
-  '&:nth-of-type(1)': {
-    top: '20%',
-    left: '10%',
-    animationDelay: '0s',
-  },
-  '&:nth-of-type(2)': {
-    top: '70%',
-    right: '10%',
-    animationDelay: '1.5s',
-  },
-  '&:nth-of-type(3)': {
-    top: '40%',
-    left: '85%',
-    animationDelay: '3s',
-  },
-}));
-
 const PositionBadge = styled(Box)(({ theme }) => ({
   fontSize: '2.5rem',
   fontWeight: 900,

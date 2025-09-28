@@ -2,7 +2,7 @@ import { Button, Container, TextField, Grid, Typography, Paper, Box, Chip, Alert
 import React, { useState, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { Assignment, Phone, PhoneDisabled, AccountCircle, CallEnd, PersonAdd } from '@mui/icons-material';
+import { Assignment, Phone, AccountCircle, CallEnd, PersonAdd } from '@mui/icons-material';
 import { SocketContext } from '../../SocketContext';
 
 const OptionsContainer = styled(Container)(({ theme }) => ({

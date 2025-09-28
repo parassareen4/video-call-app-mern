@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Button, Box, Typography, Avatar, Paper, Fade, IconButton } from '@mui/material';
+import { Button, Box, Typography, Avatar, Paper, Fade } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { SocketContext } from '../../SocketContext';
 import PhoneIcon from '@mui/icons-material/Phone';
