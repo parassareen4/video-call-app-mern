@@ -10,7 +10,6 @@ import {
   Box,
   Chip,
   Grid,
-  CircularProgress,
   ListItemAvatar,
   Avatar
 } from '@mui/material';
@@ -52,7 +51,7 @@ const useStyles = makeStyles(() => ({
 
 const AdminDashboard = () => {
   const classes = useStyles();
-  const { waitingClients, adminCallClient, me } = useContext(SocketContext);
+  const { waitingClients, adminCallClient } = useContext(SocketContext);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
 
   // Update timestamp when clients change

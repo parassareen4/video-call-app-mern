@@ -60,8 +60,6 @@ const ContextProvider = ({ children }) => {
         }
     }, [stream]);
 
-    // console.log(me);
-
     const answerCall = () => {
         setCallAccepted(true);
 

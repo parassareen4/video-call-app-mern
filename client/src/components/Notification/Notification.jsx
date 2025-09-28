@@ -1,7 +1,5 @@
 import React, { useContext } from 'react';
 import { Button } from '@mui/material';
-import './Notification.css';
-
 import { SocketContext } from '../../SocketContext';
 
 const Notification = () => {
