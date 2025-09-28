@@ -113,6 +113,13 @@ const ContextProvider = ({ children }) => {
             }
         }
         
+        // Stop video stream to turn off camera
+        if (stream) {
+            stream.getTracks().forEach(track => {
+                track.stop();
+            });
+        }
+        
         // Notify server that call ended
         socket.emit('callEnded');
 
@@ -121,8 +128,10 @@ const ContextProvider = ({ children }) => {
         setCallAccepted(false);
         setCallEnded(false);
 
-        // Don't stop video stream - keep it for next call
-        // Keep stream active for dashboard return
+        // Reload page to ensure camera is turned off
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
     }
 
     const joinRoom = (role, name) => {
