@@ -103,7 +103,14 @@ const ContextProvider = ({ children }) => {
     const leaveCall = () => {
         setCallEnded(true);
 
-        connectionRef.current.destroy();
+        // Safely destroy peer connection
+        if (connectionRef.current) {
+            try {
+                connectionRef.current.destroy();
+            } catch (err) {
+                console.log('Peer already destroyed');
+            }
+        }
         
         // Notify server that call ended
         socket.emit('callEnded');
@@ -113,11 +120,8 @@ const ContextProvider = ({ children }) => {
         setCallAccepted(false);
         setCallEnded(false);
 
-        // Stop video stream
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            setStream(null);
-        }
+        // Don't stop video stream - keep it for next call
+        // Keep stream active for dashboard return
     }
 
     const joinRoom = (role, name) => {

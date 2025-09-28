@@ -5,6 +5,14 @@ import App from './App';
 import { ContextProvider } from './SocketContext';
 import reportWebVitals from './reportWebVitals';
 
+// Polyfill for process in browser environment
+if (typeof global === 'undefined') {
+  window.global = window;
+}
+if (typeof process === 'undefined') {
+  window.process = { env: {} };
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <ContextProvider>

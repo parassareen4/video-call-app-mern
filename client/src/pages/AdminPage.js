@@ -142,8 +142,11 @@ const AdminPage = () => {
           <Typography variant="h6" style={{ flexGrow: 1 }}>
             Counseling Session - {adminName}
           </Typography>
-          <Button color="inherit" onClick={handleLogout} startIcon={<ExitToAppIcon />}>
-            End & Logout
+          <Button color="inherit" onClick={leaveCall} startIcon={<ExitToAppIcon />}>
+            End Session
+          </Button>
+          <Button color="inherit" onClick={handleLogout}>
+            Logout
           </Button>
         </Toolbar>
       </AppBar>

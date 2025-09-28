@@ -144,8 +144,11 @@ const ClientPage = () => {
           <Typography variant="h6" style={{ flexGrow: 1 }}>
             Counseling Session - {clientName}
           </Typography>
-          <Button color="inherit" onClick={handleLeave} startIcon={<ExitToAppIcon />}>
-            End & Leave
+          <Button color="inherit" onClick={leaveCall} startIcon={<ExitToAppIcon />}>
+            End Session
+          </Button>
+          <Button color="inherit" onClick={handleLeave}>
+            Leave Platform
           </Button>
         </Toolbar>
       </AppBar>
