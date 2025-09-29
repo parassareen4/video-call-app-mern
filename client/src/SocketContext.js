@@ -17,12 +17,33 @@ const ContextProvider = ({ children }) => {
     const [userRole, setUserRole] = useState('');
     const [waitingClients, setWaitingClients] = useState([]);
     const [queuePosition, setQueuePosition] = useState(null);
+    const [isReconnecting, setIsReconnecting] = useState(false);
     const myVideo = useRef();
     const userVideo = useRef();
     const connectionRef = useRef();
 
     useEffect(() => {
         socket.on('me', (id) => setMe(id));
+
+        // Connection state management
+        socket.on('connect', () => {
+            setIsReconnecting(false);
+            console.log('Connected to server');
+        });
+
+        socket.on('disconnect', () => {
+            setIsReconnecting(true);
+            console.log('Disconnected from server');
+        });
+
+        socket.on('reconnect', () => {
+            setIsReconnecting(false);
+            console.log('Reconnected to server');
+            // Rejoin room if user was previously connected
+            if (userRole && Name) {
+                socket.emit('join', { role: userRole, name: Name });
+            }
+        });
 
         // Admin-specific events
         socket.on('clientsUpdate', (clients) => {
@@ -45,12 +66,15 @@ const ContextProvider = ({ children }) => {
 
         return () => {
             socket.off('me');
+            socket.off('connect');
+            socket.off('disconnect');
+            socket.off('reconnect');
             socket.off('clientsUpdate');
             socket.off('queuePosition');
             socket.off('adminCalling');
             socket.off('calluser');
         };
-    }, []);
+    }, [userRole, Name]);
 
     // Set video stream when stream is available
     useEffect(() => {
@@ -118,20 +142,43 @@ const ContextProvider = ({ children }) => {
             stream.getTracks().forEach(track => {
                 track.stop();
             });
+            setStream(null);
+        }
+        
+        // Clear video elements
+        if (myVideo.current) {
+            myVideo.current.srcObject = null;
+        }
+        if (userVideo.current) {
+            userVideo.current.srcObject = null;
         }
         
         // Notify server that call ended
         socket.emit('callEnded');
 
-        // Reset call state
-        setCall({});
-        setCallAccepted(false);
-        setCallEnded(false);
-
-        // Reload page to ensure camera is turned off
+        // Reset call state gracefully
         setTimeout(() => {
-            window.location.reload();
-        }, 500);
+            setCall({});
+            setCallAccepted(false);
+            setCallEnded(false);
+            
+            // Re-request media for future calls if user is still in queue
+            if (userRole === 'client') {
+                setTimeout(() => {
+                    navigator.mediaDevices.getUserMedia({
+                        video: true,
+                        audio: true
+                    }).then(newStream => {
+                        setStream(newStream);
+                        if (myVideo.current) {
+                            myVideo.current.srcObject = newStream;
+                        }
+                    }).catch(err => {
+                        console.error('Failed to restart media:', err);
+                    });
+                }, 1000);
+            }
+        }, 100);
     }
 
     const joinRoom = (role, name) => {
@@ -182,7 +229,8 @@ const ContextProvider = ({ children }) => {
             userRole,
             waitingClients,
             queuePosition,
-            adminCallClient
+            adminCallClient,
+            isReconnecting
         }}>
             {children}
         </SocketContext.Provider>
@@ -190,13 +238,3 @@ const ContextProvider = ({ children }) => {
 }
 
 export { ContextProvider, SocketContext };
-
-
-
-
-
-
-
-
-
-

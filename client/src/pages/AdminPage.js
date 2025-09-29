@@ -118,7 +118,8 @@ const AdminPage = () => {
   }, [isLoggedIn, joinRoom]);
 
   const handleLogin = () => {
-    joinRoom('admin', 'Ryan');
+    if (!adminName.trim()) return;
+    joinRoom('admin', adminName.trim());
     setIsLoggedIn(true);
   };
 
@@ -126,9 +127,12 @@ const AdminPage = () => {
     if (callAccepted && !callEnded) {
       leaveCall();
     }
-    setIsLoggedIn(false);
-    setAdminName('Ryan');
-    navigate('/');
+    // Add delay to ensure call cleanup completes
+    setTimeout(() => {
+      setIsLoggedIn(false);
+      setAdminName('Ryan');
+      navigate('/');
+    }, 500);
   };
 
   const renderLoginForm = () => (

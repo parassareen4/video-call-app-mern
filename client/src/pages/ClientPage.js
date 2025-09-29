@@ -132,9 +132,12 @@ const ClientPage = () => {
     if (callAccepted && !callEnded) {
       leaveCall();
     }
-    setIsJoined(false);
-    setClientName('');
-    navigate('/');
+    // Add delay to ensure call cleanup completes
+    setTimeout(() => {
+      setIsJoined(false);
+      setClientName('');
+      navigate('/');
+    }, 500);
   };
 
   const renderJoinForm = () => (

@@ -72,9 +72,8 @@ io.on('connection', (socket) => {
             clientHistory.set(socket.id, { name, joinedAt, lastSeen: joinedAt });
             console.log('Client joined queue:', name, 'Total in queue:', waitingClients.length);
             
-            // Notify client of their queue position (after adding to queue)
-            const position = waitingClients.length; // Use length instead of indexOf to avoid race condition
-            socket.emit('queuePosition', position);
+            // Update all queue positions after adding new client
+            updateQueuePositions();
             
             // Notify admin of new client (even if admin not connected)
             if (adminSocket) {
