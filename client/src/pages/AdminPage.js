@@ -60,7 +60,7 @@ const LoginPaper = styled(Paper)(({ theme }) => ({
 const LoginIcon = styled(AdminPanelSettingsIcon)(({ theme }) => ({
   fontSize: '5rem',
   marginBottom: theme.spacing(2),
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  background: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   backgroundClip: 'text',
@@ -73,8 +73,8 @@ const LoginIcon = styled(AdminPanelSettingsIcon)(({ theme }) => ({
 }));
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+  background: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
+  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
   borderRadius: 0,
   [theme.breakpoints.down('md')]: {
     position: 'sticky',
@@ -158,7 +158,7 @@ const AdminPage = () => {
           <LoginIcon />
           <Typography variant="h3" gutterBottom sx={{ 
             fontWeight: 700, 
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -254,7 +254,7 @@ const AdminPage = () => {
           </IconButton>
         </Toolbar>
       </StyledAppBar>
-      <Box sx={{ minHeight: 'calc(100vh - 64px)', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <Box sx={{ minHeight: 'calc(100vh - 64px)', background: 'linear-gradient(135deg, #000000 0%, #333333 100%)' }}>
         <VideoPlayer />
         <Options role="admin" />
       </Box>
@@ -307,7 +307,7 @@ const AdminPage = () => {
       <BackFab size="medium" onClick={() => navigate('/')} aria-label="home">
         <HomeIcon />
       </BackFab>
-      <Box sx={{ minHeight: 'calc(100vh - 64px)', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <Box sx={{ minHeight: 'calc(100vh - 64px)', background: 'linear-gradient(135deg, #000000 0%, #333333 100%)' }}>
         <AdminDashboard />
         <Notification />
       </Box>

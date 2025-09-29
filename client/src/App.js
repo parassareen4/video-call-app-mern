@@ -12,22 +12,22 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#667eea',
-      light: '#8fa4f3',
-      dark: '#4a5bd8',
+      main: '#000000',
+      light: '#333333',
+      dark: '#000000',
     },
     secondary: {
-      main: '#764ba2',
-      light: '#9b6db5',
-      dark: '#523882',
+      main: '#ffffff',
+      light: '#f5f5f5',
+      dark: '#e0e0e0',
     },
     background: {
-      default: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      default: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
       paper: 'rgba(255, 255, 255, 0.95)',
     },
     text: {
-      primary: '#2c3e50',
-      secondary: '#7f8c8d',
+      primary: '#000000',
+      secondary: '#666666',
     },
   },
   typography: {
@@ -119,8 +119,8 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+          background: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
         },
       },
     },

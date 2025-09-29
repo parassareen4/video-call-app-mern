@@ -25,14 +25,15 @@ const VideoPaper = styled(Paper)(({ theme }) => ({
   borderRadius: '25px',
   background: 'rgba(255, 255, 255, 0.95)',
   backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+  border: '2px solid rgba(0, 0, 0, 0.1)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
   position: 'relative',
   overflow: 'hidden',
   transition: 'all 0.3s ease',
   '&:hover': {
     transform: 'translateY(-4px)',
-    boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15)',
+    boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4)',
+    border: '2px solid rgba(0, 0, 0, 0.2)',
   },
   [theme.breakpoints.up('md')]: {
     flex: 1,
@@ -71,8 +72,9 @@ const UserHeader = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
   padding: theme.spacing(1),
   borderRadius: '15px',
-  background: 'rgba(102, 126, 234, 0.1)',
+  background: 'rgba(0, 0, 0, 0.05)',
   backdropFilter: 'blur(10px)',
+  border: '1px solid rgba(0, 0, 0, 0.1)',
 }));
 
 const UserInfo = styled(Box)(({ theme }) => ({
@@ -82,7 +84,8 @@ const UserInfo = styled(Box)(({ theme }) => ({
 }));
 
 const UserAvatar = styled(Avatar)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  background: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
+  color: '#ffffff',
   width: 40,
   height: 40,
   [theme.breakpoints.down('sm')]: {
@@ -92,11 +95,12 @@ const UserAvatar = styled(Avatar)(({ theme }) => ({
 }));
 
 const StatusChip = styled(Chip)(({ theme }) => ({
-  background: 'rgba(76, 175, 80, 0.1)',
-  color: '#4caf50',
-  border: '1px solid rgba(76, 175, 80, 0.3)',
+  background: 'rgba(0, 0, 0, 0.1)',
+  color: '#000000',
+  border: '1px solid rgba(0, 0, 0, 0.2)',
   fontSize: '0.75rem',
   height: 24,
+  fontWeight: 600,
 }));
 
 const VideoPlayer = () => {
@@ -112,9 +116,42 @@ const VideoPlayer = () => {
 
     return (
         <VideoContainer>
-            {/* Own Video */}
+            {/* Other User's Video - First on mobile */}
+            {callAccepted && !callEnded && (
+                <VideoPaper elevation={0} sx={{ order: { xs: 1, md: 2 } }}>
+                    <UserHeader>
+                        <UserInfo>
+                            <UserAvatar sx={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)', color: '#000000' }}>
+                                <PersonIcon />
+                            </UserAvatar>
+                            <Box>
+                                <Typography variant='h6' sx={{ fontWeight: 600, mb: 0.5 }}>
+                                    {call.name || 'Other User'}
+                                </Typography>
+                                <StatusChip 
+                                    icon={<VideocamIcon sx={{ fontSize: '16px !important' }} />} 
+                                    label="Live" 
+                                    size="small" 
+                                />
+                            </Box>
+                        </UserInfo>
+                        <StatusChip 
+                            icon={<MicIcon sx={{ fontSize: '16px !important' }} />} 
+                            label="Audio On" 
+                            size="small" 
+                        />
+                    </UserHeader>
+                    <VideoElement 
+                        playsInline 
+                        ref={userVideo} 
+                        autoPlay 
+                    />
+                </VideoPaper>
+            )}
+
+            {/* Own Video - Second on mobile */}
             {stream && (
-                <VideoPaper elevation={0}>
+                <VideoPaper elevation={0} sx={{ order: { xs: 2, md: 1 } }}>
                     <UserHeader>
                         <UserInfo>
                             <UserAvatar>
@@ -141,39 +178,6 @@ const VideoPlayer = () => {
                         playsInline 
                         muted 
                         ref={myVideo} 
-                        autoPlay 
-                    />
-                </VideoPaper>
-            )}
-
-            {/* Other User's Video */}
-            {callAccepted && !callEnded && (
-                <VideoPaper elevation={0}>
-                    <UserHeader>
-                        <UserInfo>
-                            <UserAvatar sx={{ background: 'linear-gradient(135deg, #e91e63 0%, #ad1457 100%)' }}>
-                                <PersonIcon />
-                            </UserAvatar>
-                            <Box>
-                                <Typography variant='h6' sx={{ fontWeight: 600, mb: 0.5 }}>
-                                    {call.name || 'Other User'}
-                                </Typography>
-                                <StatusChip 
-                                    icon={<VideocamIcon sx={{ fontSize: '16px !important' }} />} 
-                                    label="Live" 
-                                    size="small" 
-                                />
-                            </Box>
-                        </UserInfo>
-                        <StatusChip 
-                            icon={<MicIcon sx={{ fontSize: '16px !important' }} />} 
-                            label="Audio On" 
-                            size="small" 
-                        />
-                    </UserHeader>
-                    <VideoElement 
-                        playsInline 
-                        ref={userVideo} 
                         autoPlay 
                     />
                 </VideoPaper>
