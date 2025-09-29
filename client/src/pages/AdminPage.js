@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   AppBar, 
@@ -100,6 +100,19 @@ const AdminPage = () => {
   const navigate = useNavigate();
   const [adminName, setAdminName] = useState('Ryan');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Reload page when admin dashboard is accessed
+  useEffect(() => {
+    const hasReloaded = sessionStorage.getItem('adminPageReloaded');
+    if (!hasReloaded) {
+      sessionStorage.setItem('adminPageReloaded', 'true');
+      window.location.reload();
+    }
+    
+    return () => {
+      sessionStorage.removeItem('adminPageReloaded');
+    };
+  }, []);
   
   const {
     call,
