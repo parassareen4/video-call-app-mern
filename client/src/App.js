@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigationType } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import './App.css';
@@ -136,38 +136,19 @@ const theme = createTheme({
   },
 });
 
-function BackNavigationHandler() {
-  const navigationType = useNavigationType();
-  
-  useEffect(() => {
-    if (navigationType === 'POP') {
-      window.location.reload();
-    }
-  }, [navigationType]);
-  
-  return null;
-}
-
-function AppContent() {
-  return (
-    <div className='wrapper'>
-      <BackNavigationHandler />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="/client" element={<ClientPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </div>
-  );
-}
-
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <AppContent />
+        <div className='wrapper'>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/client" element={<ClientPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </div>
       </Router>
     </ThemeProvider>
   );
