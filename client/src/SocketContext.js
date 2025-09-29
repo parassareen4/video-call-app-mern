@@ -156,29 +156,15 @@ const ContextProvider = ({ children }) => {
         // Notify server that call ended
         socket.emit('callEnded');
 
-        // Reset call state gracefully
+        // Reset call state and reload to ensure clean state
         setTimeout(() => {
             setCall({});
             setCallAccepted(false);
             setCallEnded(false);
             
-            // Re-request media for future calls if user is still in queue
-            if (userRole === 'client') {
-                setTimeout(() => {
-                    navigator.mediaDevices.getUserMedia({
-                        video: true,
-                        audio: true
-                    }).then(newStream => {
-                        setStream(newStream);
-                        if (myVideo.current) {
-                            myVideo.current.srcObject = newStream;
-                        }
-                    }).catch(err => {
-                        console.error('Failed to restart media:', err);
-                    });
-                }, 1000);
-            }
-        }, 100);
+            // Reload page to ensure complete cleanup of WebRTC state
+            window.location.reload();
+        }, 500);
     }
 
     const joinRoom = (role, name) => {
